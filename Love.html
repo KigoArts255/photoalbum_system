@@ -1,0 +1,269 @@
+<?php
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love Mode | Interactive Gallery</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .gallery-container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        /* Enhanced stage with cursor pointer hint for full-screen viewing */
+        .stage {
+            width: 100%;
+            height: 480px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f2f6;
+            margin-bottom: 20px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        .stage img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Clean zoom hint on hover */
+        .stage:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Hover hint badge layout overlays */
+        .zoom-overlay-hint {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stage:hover .zoom-overlay-hint {
+            opacity: 1;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(232, 67, 147, 0.25);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* =================================================================
+           FULL SIZE IMMERSIVE LIGHTBOX MODAL UI
+        ================================================================== */
+        .lightbox-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 9999; /* Float over all elements, menus, headers */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 15, 18, 0.95);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Displays photo at native uncropped dimensions cleanly */
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox-modal.show .lightbox-content {
+            transform: scale(1);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #f1f2f6;
+            font-size: 40px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .lightbox-close:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <header id="title">
+        <h1>💖 Love Mode 💖</h1>
+        <p style="color: white; font-size: 0.9rem; margin-top:5px;">Cherished Moments & Profiles</p>
+    </header>
+
+    <nav>
+        <ul id="menu">
+            <li><a href="index.php">Home</a></li>
+            <li><a href="about.php">About</a></li>
+            <li><a href="Love.php" class="active">Love</a></li>
+            <li><a href="Family.php">Family</a></li>
+            <li><a href="Journey.php">Journey</a></li>
+            <li><a href="Alone.php">Alone</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="gallery-container">
+            <div class="stage" id="galleryStage" title="Click to view full image sizes">
+                <img src="love/swammyjeffer.jpg" id="activePhoto" alt="Gallery Image Track">
+                <div class="zoom-overlay-hint">🔍 View Full Size</div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="prevBtn">◀ Previous</button>
+                <button class="btn" id="nextBtn">Next ▶</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="lightbox-modal" id="lightbox">
+        <span class="lightbox-close" id="closeLightbox">&times;</span>
+        <img class="lightbox-content" id="fullSizeImage" src="" alt="Full dimension view container">
+    </div>
+
+    <footer>
+        <p style="text-align:center">Created With <span style="color: #e84393;">&hearts;</span> By KIGOME</p>
+    </footer>
+
+    <script>
+        // 1. Array array matching your local storage file structures
+        const galleryImages = [
+            "love/swammyjeffer.jpg",
+            // Drop additional relative strings below as needed:
+            // "love/photo2.jpg",
+            // "love/photo3.jpg"
+        ];
+
+        // Track state index
+        let currentIndex = 0;
+
+        // Cache layout DOM nodes
+        const activePhoto = document.getElementById('activePhoto');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const galleryStage = document.getElementById('galleryStage');
+        
+        const lightbox = document.getElementById('lightbox');
+        const fullSizeImage = document.getElementById('fullSizeImage');
+        const closeLightbox = document.getElementById('closeLightbox');
+
+        // Function updates rendering target paths smoothly
+        function updateGalleryView(index) {
+            activePhoto.src = galleryImages[index];
+        }
+
+        // Next item transition logic
+        nextBtn.addEventListener('click', () => {
+            currentIndex++;
+            if (currentIndex >= galleryImages.length) {
+                currentIndex = 0; // Seamless loop reset back to start index
+            }
+            updateGalleryView(currentIndex);
+        });
+
+        // Previous item transition logic
+        prevBtn.addEventListener('click', () => {
+            currentIndex--;
+            if (currentIndex < 0) {
+                currentIndex = galleryImages.length - 1; // Seamless loop jump to end item index
+            }
+            updateGalleryView(currentIndex);
+        });
+
+        // 2. Full-Size Modal Lightbox Engine Rules
+        galleryStage.addEventListener('click', () => {
+            // Source link updates directly to current slide paths
+            fullSizeImage.src = activePhoto.src;
+            lightbox.classList.add('show');
+        });
+
+        // Dismiss frame via close token button
+        closeLightbox.addEventListener('click', () => {
+            lightbox.classList.remove('show');
+        });
+
+        // Dismiss frame instantly if user clicks out over the blurred dark background
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) {
+                lightbox.classList.remove('show');
+            }
+        });
+
+        // Keyboard accessibility: press ESC key to close full view mode easily
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && lightbox.classList.contains('show')) {
+                lightbox.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

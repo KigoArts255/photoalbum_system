@@ -1,0 +1,201 @@
+/* =================================================================
+   GLOBAL RESET & THEME
+================================================================== */
+:root {
+    --primary-gradient: linear-gradient(135deg, #74b9ff, #fd79a8);
+    --dark-bg: #1e1e24;
+    --card-bg: #ffffff;
+    --text-main: #2d3436;
+    --text-muted: #636e72;
+    --accent: #e84393;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --radius: 12px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+/* =================================================================
+   HEADER & NAVIGATION
+================================================================== */
+header#title {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+header#title h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+nav {
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+#menu {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    list-style: none;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+
+#menu li a {
+    display: block;
+    padding: 12px 20px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-radius: var(--radius);
+    margin: 0 5px;
+}
+
+#menu li a:hover, #menu li a.active {
+    background: rgba(116, 185, 255, 0.15);
+    color: #0984e3;
+}
+
+/* =================================================================
+   MAIN PORTFOLIO GRID
+================================================================== */
+main {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+/* =================================================================
+   CARD STYLING (UX Micro-interactions)
+================================================================== */
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.cardinfo {
+    padding: 15px 20px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+.cardinfo h4 {
+    font-size: 1.1rem;
+    text-transform: capitalize;
+    color: var(--text-main);
+}
+
+.pic {
+    width: 100%;
+    height: 260px;
+    overflow: hidden;
+    background: #eaeff2;
+}
+
+.cardpic {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .cardpic {
+    transform: scale(1.06);
+}
+
+.picday {
+    padding: 15px 20px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: auto;
+    background: #fafafa;
+}
+
+/* =================================================================
+   FOOTER STYLE
+================================================================== */
+footer {
+    background: var(--dark-bg);
+    color: #a0aec0;
+    padding: 40px 20px 20px 20px;
+    margin-top: auto;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+#contactinfo list-style-type, #contactinfo ul {
+    list-style: none;
+}
+
+#contactinfo h3 {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+#contactinfo li {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+footer hr {
+    border: 0;
+    border-top: 1px solid #2d3748;
+    margin: 25px 0;
+}
+
+.copyright {
+    text-align: center;
+    font-size: 0.9rem;
+}

@@ -1,0 +1,78 @@
+<?php
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY PHOTO ALBUM</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body> 
+    <header id="title">
+        <div>
+            <h1>📸 H.S. KIGOME Journey & Life Events 📸</h1>
+        </div>
+    </header>
+
+    <nav>
+        <ul id="menu">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="Love.html">Love</a></li>
+            <li><a href="Family.html">Family</a></li>
+            <li><a href="Journey.html">Journey</a></li>
+            <li><a href="Alone.html">Alone</a></li>
+        </ul>
+    </nav>
+       
+    <main>
+        <div id="container">
+            <div class="card">
+                <div class="cardinfo">
+                    <h4>Sister</h4>
+                </div>
+                <div class="pic"> 
+                    <img class="cardpic" src="shakira.jpg" alt="Shakira sample from family">
+                </div>
+                <div class="picday">
+                    <p>📅 Added: May 2026</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="cardinfo">
+                    <h4>Graduation Day</h4>
+                </div>
+                <div class="pic"> 
+                    <img class="cardpic" src="about/founder.jpg" alt="IAA Life">
+                </div>
+                <div class="picday">
+                    <p>📅 IAA Campus Chronicles</p>
+                </div>
+            </div>
+            
+            </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div id="contactinfo">
+                <ul>
+                    <li><h3>Get in Touch</h3></li>
+                    <li>✉️ husenikigome123@gmail.com</li>
+                    <li>📞 +255 614 115 629</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <p class="copyright">Created With <span style="color: #e84393; font-size:18px;">&hearts;</span> By KIGOME</p>
+    </footer>
+</body>
+</html>
